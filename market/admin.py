@@ -1,6 +1,6 @@
 from django.contrib import admin
 from market.funcs import get_editable_fields, expand_list_unique, \
-    get_existent_fields
+    get_existent_fields, get_readonly_fields
 from .models import *
 
 #Start common inline model
@@ -30,7 +30,8 @@ class CAM(admin.ModelAdmin):
         search_fields = [f.name for f in get_existent_fields(in_model, ['name', ])]
         list_display_links = ['get_pk', ]
         fieldsets = in_fieldsets+[('Actuality', {'fields': ['is_actual', ('created_when', 'updated_when')]}), ('Extra', {'fields': ['description'], 'classes':['collapse']}),]
-        return list_display, list_editable, search_fields, list_display_links, fieldsets
+        readonly_fields = ['created_when', 'updated_when']
+        return list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields
     def get_actions(self, request):
         actions = super(CAM, self).get_actions(request)
         if 'delete_selected' in actions:
@@ -40,107 +41,107 @@ class CAM(admin.ModelAdmin):
 
 #Start admin models
 class PersonAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [('name', 'user'), ]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'user')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Person, ['name', 'user'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Person, ['name', 'user'], in_fieldsets)
 
 
 class ContactDetailsAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
-    fieldsets = [
-        (None,                {'fields': [('person', 'email', 'phone', )]}),
+    in_fieldsets = [
+        (None,                {'fields': [('person', 'email', 'phone')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(ContactDetails, ['person', 'email', 'phone'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(ContactDetails, ['person', 'email', 'phone'], in_fieldsets)
 
 class BrandAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
-    fieldsets = [
-        (None,                {'fields': [(('name', 'owner'), ('contract', 'site_address'), )]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'owner'), ('contract', 'site_address')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Brand, ['name', 'owner', 'site_address', 'contract'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Brand, ['name', 'owner', 'site_address', 'contract'], in_fieldsets)
 
 class ShopAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
-    fieldsets = [
-        (None,                {'fields': [(('name', 'brand'), ('owner', 'address'), ('working_days', 'working_hours'), )]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'brand'), ('owner', 'address'), ('working_days', 'working_hours')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Shop, ['name', 'brand', 'owner', 'address', 'working_days', 'working_hours'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Shop, ['name', 'brand', 'owner', 'address', 'working_days', 'working_hours'], in_fieldsets)
 
 class ItemTypeAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
-    fieldsets = [
-        (None,                {'fields': [('name', 'category', )]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'category')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(ItemType, ['name', 'category_m2m'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(ItemType, ['name', 'category_m2m'], in_fieldsets)
 
 class CategoryAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
-    fieldsets = [
-        (None,                {'fields': [(('name', 'parent'), )]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'parent')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Category, ['name', 'parent'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Category, ['name', 'parent'], in_fieldsets)
 
 class ItemAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('type', 'shop'), ('quantity', 'price'))]}),
+    in_fieldsets = [
+        (None,                {'fields': [('type', 'shop'), ('quantity', 'price')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Item, ['type', 'shop', 'quantity', 'price'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Item, ['type', 'shop', 'quantity', 'price'], in_fieldsets)
 
 class CharacteristicAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('name', 'item_type', 'measurement'),)]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'item_type', 'measurement')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Characteristic, ['name', 'item_type_m2m', 'measurement'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Characteristic, ['name', 'item_type_m2m', 'measurement'], in_fieldsets)
 
 class MeasurementAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('name', 'compared_to', 'multiplier'),)]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name', 'compared_to', 'multiplier')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Measurement, ['name', 'compared_to', 'multiplier'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Measurement, ['name', 'compared_to', 'multiplier'], in_fieldsets)
 
 class OrderAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('customer', 'delivery', 'payment'),)]}),
+    in_fieldsets = [
+        (None,                {'fields': [('customer', 'delivery', 'payment')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Order, ['customer', 'delivery', 'payment'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Order, ['customer', 'delivery', 'payment'], in_fieldsets)
 
 class OrderItemAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('item', 'quantity'),('price', 'order'))]}),
+    in_fieldsets = [
+        (None,                {'fields': [('item', 'quantity'), ('price', 'order')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(OrderItem, ['item', 'quantity', 'price', 'order'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(OrderItem, ['item', 'quantity', 'price', 'order'], in_fieldsets)
 
 class DeliveryAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('price', 'details'),)]}),
+    in_fieldsets = [
+        (None,                {'fields': [('price', 'details')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Delivery, ['price', 'details'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Delivery, ['price', 'details'], in_fieldsets)
 
 class DeliveryDetailsAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('address', 'phone'), 'delivery_when')]}),
+    in_fieldsets = [
+        (None,                {'fields': [('address', 'phone'), 'delivery_when']}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(DeliveryDetails, ['address', 'phone', 'delivery_when'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(DeliveryDetails, ['address', 'phone', 'delivery_when'], in_fieldsets)
 
 class PaymentAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [(('type', 'amount'),)]}),
+    in_fieldsets = [
+        (None,                {'fields': [('type', 'amount')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Delivery, ['type', 'amount'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Delivery, ['type', 'amount'], in_fieldsets)
 
 class PaymentTypeAdmin(CAM):
-    fieldsets = [
-        (None,                {'fields': [('name')]}),
+    in_fieldsets = [
+        (None,                {'fields': [('name',)]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(DeliveryDetails, ['name'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(DeliveryDetails, ['name'], in_fieldsets)
 
 class DirectoryAdmin(CAM):
     list_filter = ('updated_when', )
-    fieldsets = [
-        (None,                {'fields': [('key', 'value', ), ]}),
+    in_fieldsets = [
+        (None,                {'fields': [('key', 'value')]}),
     ]
-    list_display, list_editable, search_fields, list_display_links, fieldsets = CAM.gim(Directory, ['key', 'value', 'updated_when'], fieldsets)
+    list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Directory, ['key', 'value'], in_fieldsets)
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(ContactDetails, ContactDetailsAdmin)

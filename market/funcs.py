@@ -8,6 +8,9 @@ from django.db import connection
 def get_editable_fields(model, supposed_fields):
     return [field for field in get_existent_fields(model, supposed_fields) if field.editable and not field.many_to_many]
 
+def get_readonly_fields(model, supposed_fields):
+    return [field for field in get_existent_fields(model, supposed_fields) if not field.editable and not field.many_to_many]
+
 def get_existent_fields(model, supposed_fields):
     fields = []
     for field in model._meta.get_fields():

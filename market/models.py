@@ -5,9 +5,9 @@ from django.utils.translation import gettext as _
 
 class DescriptionModel(models.Model):
     description = models.TextField(blank = True, verbose_name=_("Description"), help_text=_("Any information which may be helpful to operate the current object."))
-    created_when = models.DateTimeField(auto_now_add = True, blank = True, editable=False, verbose_name=_("Created When"), help_text=_("When current object was created."))
-    updated_when = models.DateTimeField(auto_now = True, blank = True, editable=False, verbose_name=_("Updated When"), help_text=_("When current object was updated last time."))
-    is_actual = models.BooleanField(default=True, verbose_name=_("Is Actual"), help_text=_("Designates whether this item should be taken into account or not."))
+    created_when = models.DateTimeField(auto_now_add = True, verbose_name=_("Created When"), help_text=_("When current object was created."))
+    updated_when = models.DateTimeField(auto_now = True, verbose_name=_("Updated When"), help_text=_("When current object was modified last time."))
+    is_actual = models.BooleanField(default=True, verbose_name=_("Is Actual"), help_text=_("Designates whether this item should be taken into the account or not."))
     def get_admin_url(self):
         """
         Returns the admin URL to edit the object represented by this log entry.
