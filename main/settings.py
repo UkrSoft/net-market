@@ -72,6 +72,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+	    'loaders' : [
+		'django.template.loaders.filesystem.Loader',
+		'django.template.loaders.app_directories.Loader',
+		'admin_tools.template_loaders.Loader'
+	    ]
         },
     },
 ]
@@ -79,7 +84,7 @@ TEMPLATES = [
 STATICFILES_FINDERS = ("django.contrib.staticfiles.finders.FileSystemFinder",
  "django.contrib.staticfiles.finders.AppDirectoriesFinder")
 
-WSGI_APPLICATION = 'main.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -88,8 +93,8 @@ WSGI_APPLICATION = 'main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'netmarket', 
-		'USER': 'netmarket', 
+        'NAME': 'market', 
+		'USER': 'market', 
 		'PASSWORD': 'wearethebest', 
 		'HOST': '127.0.0.1', 
 		'PORT': '3306'
