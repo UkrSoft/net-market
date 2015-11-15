@@ -1,1 +1,3 @@
 *.pyc
+wsgi/market-env/
+market/migrations/
