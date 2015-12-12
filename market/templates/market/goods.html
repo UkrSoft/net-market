@@ -1,0 +1,10 @@
+{% extends "market/base_template.html" %}
+{% load i18n %}
+{% block title %}{% trans 'Goods' %}{% endblock %}
+{% block branding %}{% trans 'Goods' %}{% endblock %}
+{% block breadcrumbs %}{{ block.super }} &rsaquo; <a href='/'>{% trans 'Goods' %}</a>{% endblock %}
+{% block content %}Товари:<br/>
+	{% for item in goods %}
+		<a href='{% url 'market:goods_one' item.pk %}'>{{ item.name }} - {{ item.price }}</a><br/>
+	{% endfor %}
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from django.template import RequestContext
 from django.views.generic import TemplateView
 from django.shortcuts import render
@@ -5,16 +6,38 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from market.funcs import MagicSql
-# from market.models import Operator, ServiceType
-
+from market.models import Item, Shop
+from django.shortcuts import get_object_or_404
 
 class MainView(TemplateView):
     template_name = "market/index.html"
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
-        # context['goods'] = Operator.objects.all()
-        # context['serviceTypes'] = ServiceType.objects.filter(is_displayed=True)
         return context
+		
+def shops(request, item_id=None):
+    if (item_id is None):
+        args = {'shops' : Shop.objects.all()}
+        template = 'market/shops.html'
+    else:
+        args = {'shop' : get_object_or_404(Shop, id = item_id)}
+        template = 'market/shops_one.html'
+    context = RequestContext(request, args)
+    return render(request, template, context)
+
+def goods(request, item_id=None):
+    if (item_id is None):
+        args = {'goods' : Item.objects.all()}
+        template = 'market/goods.html'
+    else:
+        args = {'good' : get_object_or_404(Item, id = item_id)}
+        template = 'market/goods_one.html'
+    context = RequestContext(request, args)
+    return render(request, template, context)
+
+def logout1(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('market:index', None, []))
 
 # def post_results(request):
 #     if (request.method!='POST'):

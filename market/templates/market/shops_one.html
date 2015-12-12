@@ -1,0 +1,7 @@
+{% extends "market/shops.html" %}
+{% load i18n %}
+{% block title %}{{ shop.name }}{% endblock %}
+{% block branding %}{{ shop.name }}{% endblock %}
+{% block breadcrumbs %}{{ block.super }} &rsaquo; <a href='{% url 'market:shops_one' shop.id %}'>{{ shop.name }}</a>{% endblock %}
+{% block content %}Інформація про магазин: {{ shop.id }} - {{ shop.name }}
+{% endblock %}

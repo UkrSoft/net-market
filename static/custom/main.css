@@ -1,0 +1,53 @@
+/*body,html {margin: 0; padding: 0;width:100%;}
+HTML, BODY {width: 100%;height: 100%;padding: 0px;margin: 0px;background-color: #f0fff0}
+BODY, TABLE, TD, TR, TH, P, LI, OL, UL, DT, DL, DD, H1, H2, H3, H4, FORM, INPUT, SELECT, OPTION, TEXTAREA {vertical-align: top;}
+BODY, TABLE, TD, TR, TH, P, LI, OL, UL, DT, DL, DD, H1, H2, H3, H4, FORM, INPUT, SELECT, OPTION, TEXTAREA, A, A:link, A:visited, A:hover, A:active{color: black;font: 12pt "Tahoma", arial, verdana, helvetica, sans-serif;}
+IMG, table, td {border: none;}
+
+A, A:link, A:visited, A:active, A:hover{color: #5E5757;text-decoration: none;}
+A:hover{text-decoration: underline;}
+
+h1 {border-top: 1px solid black;border-bottom: 1px solid black;width:50%;font:14 px;font-weight:bold;}
+h2 {font:12 px;font-weight:bold;}
+
+.header{
+	
+}
+.footer{position:absolute;bottom:0px;left:0px;}
+
+
+.dom {float: left; margin: 2% 3% ; padding: 0;width:200px;*//*background-color: #ff6347;*//*border-bottom: 1px solid #4689ff; text-align: center;}
+
+.dom A, .dom A:link, .dom A:visited, .dom A:active, .dom A:hover{display: block;color:#4689ff;text-decoration: none;font-weight: bolder;}
+.dom A:hover{text-decoration: none;display: block;background-color: #7998ff;color:#e0ffff; font-weight: bolder;}*/
+
+/*dropdown*/
+div#nav	{position:absolute;/*margin: 0px 0px 0px 100px;*/right:0px;top:56px;padding: 0;}
+div#nav div {float: left;margin: 0;padding: 0;position: relative;border-left:1px solid #efefef;}
+/*div#nav div div.m2 {position: absolute;display: none;top: 54px; text-align: left;left:-71px}
+div#nav div div#mm1{left: -93px;}
+div#nav div div#mm2{left: -13px;}
+div#nav div div.m2 a {border:1px solid #efefef;border-top:none;display: block;text-decoration: none;color: #7f9bb4;background-color:white;padding: 6px 17px 6px 0px;font: 11px "Verdana", tahoma, arial, helvetica, sans-serif; text-align: right;}
+div#nav div div.m2 a:hover {background-color: #eeeeee}*/
+div#nav div a {border:1px solid #efefef;/*border-top:none;*/display: block;text-decoration: none;color: #7f9bb4;background-color:white;padding: 6px 17px;font: 11px "Verdana", tahoma, arial, helvetica, sans-serif; text-align: right;float:left;border-left:none}
+div#nav div  a:hover {background-color: #eeeeee;float:left}
+* html div#nav div {height: 1%;}
+* html div#nav div a {height: 1%;}
+div#nav div:hover div.m2, div#nav div.over div.m2 {display: block;}
+
+
+.prettyform  {margin:50px 30px }
+
+.prettyform label {width:120px;display:block;float:left;padding:3px 0px 5px 5px;}
+.prettyform input{width:200px;padding:2px 0px 1px 5px; height:24px}
+.prettyform select {width:200px;padding:2px 0px 1px 5px;height:24px}
+.prettyform option {}
+
+
+.standartTable{border-top:1px solid grey;border-right:1px solid grey}
+.standartTable caption {text-align:center; font-weight:bolder;line-height:25px}
+.standartTable th {border-left:1px solid grey;border-bottom:1px solid grey;background-color:grey;color:white}
+.standartTable th a, .standartTable th a:link, .standartTable th a:visited, .standartTable th a:active, .standartTable th a:hover {color:white}
+.standartTable td {border-left:1px solid grey;border-bottom:1px solid grey;}
+
+table#schedule tr td(background-color: red !important)

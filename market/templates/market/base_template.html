@@ -1,0 +1,50 @@
+{% load i18n %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- Latest compiled and minified CSS -->
+    <title>{% block title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <!-- Bootstrap -->
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/static/custom/base.css" />
+	<link rel="stylesheet" type="text/css" href="/static/custom/main.css" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div id="container">
+        {% if not is_popup %}
+            <!-- Header -->
+            <div id="header">
+                <div id="branding"><h1 id="site-name">{% block branding %}{% endblock %}</h1></div>
+                <div id="user-tools">{% block userlinks %}{% trans 'Welcome' %}, <strong>{% firstof user.first_name user.username 'friend' %}</strong>. {% if user.is_superuser %} <a href="{% url 'market:password_change' %}">{% trans 'Change password' %} / </a>{% endif %}{% if not user.pk %}<a href="{% url 'market:login' %}">{% trans 'Log in' %}</a>{% else %}<a href="{% url 'market:logout' %}">{% trans 'Log out' %}</a>{% endif %}{% endblock %}</div>
+                {% block nav-global %}{% endblock %}
+            </div>
+            <!-- END Header -->
+            <div class="breadcrumbs">{% block breadcrumbs %}<a href='{% url 'market:index' %}'>{% trans 'Sumy Net Market' %}</a>{% endblock %}</div>
+        {% endif %}
+        {% if messages %}
+            <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+        {% endif %}
+		<div id="content" class="{% block coltype %}colM{% endblock %}">
+			{% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+			{% block content %}{% block object-tools %}{% endblock %}{{ content }}{% endblock %}
+			<br class="clear" />
+        </div>
+        <!-- END Content -->
+        {% block footer %}<div id="footer"></div>{% endblock %}
+    </div>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="/static/custom/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
