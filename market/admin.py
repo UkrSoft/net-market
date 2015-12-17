@@ -71,7 +71,7 @@ class ShopAdmin(CAM):
 class ItemTypeAdmin(CAM):
     # list_filter = ['operator', 'package_type', 'po_term__is_active']
     in_fieldsets = [
-        (None,                {'fields': [('name', 'category')]}),
+        (None,                {'fields': [('name', 'category', 'photo')]}),
     ]
     list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(ItemType, ['name', 'category_m2m'], in_fieldsets)
 
@@ -84,7 +84,7 @@ class CategoryAdmin(CAM):
 
 class ItemAdmin(CAM):
     in_fieldsets = [
-        (None,                {'fields': [('type', 'shop'), ('quantity', 'price')]}),
+        (None,                {'fields': [('type', 'shop'), ('quantity', 'price', 'photo')]}),
     ]
     list_display, list_editable, search_fields, list_display_links, fieldsets, readonly_fields =  CAM.gim(Item, ['type', 'shop', 'quantity', 'price'], in_fieldsets)
 

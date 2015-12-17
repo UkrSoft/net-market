@@ -2,5 +2,25 @@
 {% load i18n %}
 {% block title %}{% trans 'Sumy Net Market' %}{% endblock %}
 {% block branding %}{% trans 'Sumy Net Market' %}{% endblock %}
-{% block content %}<h1><a href='{% url 'market:goods' %}'>{% trans 'Goods' %}</a></h1><br/>
-    <h1><a href='{% url 'market:shops' %}'>{% trans 'Shops' %}</a></h1>{% endblock %}
+{% block content %}
+    <div style="vertical-align: middle" >
+    <div class="btn-group btn-group-justified" role="group">
+        <div class="btn-group" role="group">
+            <a href='{% url 'market:goods' %}'>
+                <button type="button" class="btn btn-default btn-lg btn">
+                    <img src="/static/custom/pics/goods.jpg" alt="{% trans 'Goods' %}"><br/>
+                    <h1>{% trans 'Goods' %}</h1>
+                </button>
+            </a>
+        </div>
+        <div class="btn-group" role="group">
+            <a href='{% url 'market:shops' %}'>
+                <button type="button" class="btn btn-default btn-lg btn">
+                    <img src="/static/custom/pics/shops.jpg" alt="{% trans 'Shops' %}"><br/>
+                    <h1>{% trans 'Shops' %}</h1>
+                </button>
+            </a>
+        </div>
+    </div>
+    </div>
+{% endblock %}

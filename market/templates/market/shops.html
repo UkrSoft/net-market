@@ -2,9 +2,9 @@
 {% load i18n %}
 {% block title %}{% trans 'Shops' %}{% endblock %}
 {% block branding %}{% trans 'Shops' %}{% endblock %}
-{% block breadcrumbs %}{{ block.super }} &rsaquo; <a href='/'>{% trans 'Shops' %}</a>{% endblock %}
+{% block breadcrumbs %}{{ block.super }}<li><a href='{% url 'market:shops' %}'>{% trans 'Shops' %}</a></li>{% endblock %}
 {% block content %}Магазини:<br/>
 	{% for item in shops %}
-		<a href='{% url 'market:shops_one' item.pk %}'>{{ item.name }} - {{ item.address }}</a><br/>
+		<a href='{% url 'market:shop' item.pk %}'>{{ item.name }} - {{ item.address }}</a><br/>
 	{% endfor %}
 {% endblock %}

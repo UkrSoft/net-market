@@ -1,6 +1,8 @@
+import datetime
 from django.contrib.auth.models import User
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import models
+from django.db.models import Count, Q
 from django.utils.translation import gettext as _
 
 class DescriptionModel(models.Model):
@@ -44,6 +46,12 @@ class Person(DescriptionModel):
     user = models.OneToOneField(User, verbose_name=_("User"), help_text = _('Login name.'))
     def __str__(self):
         return self.name
+    def get_person_by_request(request):
+        user = request.user
+        person, created = Person.get_person_by_user(user)
+        return user, person, created
+    def get_person_by_user(user):
+        return Person.objects.get_or_create(name = user.username, defaults={'user':user})
     class Meta:
         verbose_name = _("Person")
         verbose_name_plural = _("People")
@@ -63,7 +71,7 @@ class ContactDetails(DescriptionModel):
 class Brand(DescriptionModel):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"), help_text=_("Brand name."))
     site_address = models.CharField(max_length=300, blank=True, null=True, verbose_name=_("Site Address"), help_text=_("Link to the company's site (if any)."))
-    contract = models.FileField(max_length=200, upload_to='static/contracts/', help_text="Contract with the current brand.")
+    contract = models.FileField(max_length=200, upload_to='static/contracts/', help_text=_("Contract with the current brand."))
     owner = models.ForeignKey('Person', verbose_name=_("Owner"), blank=True, null=True,
                                  help_text=_("Brand owner."))
     def __str__(self):
@@ -94,9 +102,10 @@ class Shop(DescriptionModel):
 class ItemType(DescriptionModel):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"), help_text = _("Item's type name."))
     category = models.ManyToManyField('Category', verbose_name=_("Category"), help_text = _("Category for the current item type."))
-    # photo = models.FileField
+    photo = models.FileField(max_length=200, null=True, blank=True, upload_to='static/photos/', help_text=_("Photo for the current item type."))
     def category_m2m(self):
-        return ', '.join(c for c in self.category)
+        return ', '.join(c.__str__() for c in self.category.all())
+    category_m2m.short_description = 'Category inline'
     def __str__(self):
         return self.name
     class Meta:
@@ -106,7 +115,7 @@ class ItemType(DescriptionModel):
 
 class Category(DescriptionModel):
     name = models.CharField(max_length=500, verbose_name=_("Name"), help_text = _("Category's name."))
-    parent = models.ForeignKey('Category', verbose_name=_("Parent category"), help_text = _("Parent category in the hierarchy."))
+    parent = models.ForeignKey('Category', blank=True, null=True, verbose_name=_("Parent category"), help_text = _("Parent category in the hierarchy."))
     def __str__(self):
         return self.name
     class Meta:
@@ -120,7 +129,7 @@ class Item(DescriptionModel):
     shop = models.ForeignKey('Shop', verbose_name=_("Shop"), help_text=_("Shop which is selling this item."))
     quantity = models.IntegerField(verbose_name=_("Quantity"), help_text=_("Amount of items available."))
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price"), help_text=_("Price for the item."))
-    # photo = models.FileField
+    photo = models.FileField(max_length=200, null=True, blank=True, upload_to='static/photos/', help_text=_("Photo of the current item."))
     def __str__(self):
         return _("%(type)s from %(shop)s (%(quantity)s)") % {
             'type':self.type, 'shop':self.shop, 'quantity':self.quantity}
@@ -168,9 +177,32 @@ class Measurement(DescriptionModel):
 class Order(DescriptionModel):
     customer = models.ForeignKey('Person', verbose_name=_("Customer"), help_text=_("Customer who made this order."))
     delivery = models.ForeignKey('Delivery', null=True, blank=True, verbose_name=_("Delivery"), help_text=_("Delivery details (if any)."))
-    payment = models.ForeignKey('Payment', verbose_name=_("Payment"), help_text=_("Payment details."))
+    payment = models.ForeignKey('Payment', null=True, blank=True, verbose_name=_("Payment"), help_text=_("Payment details."))
     def __str__(self):
         return '%(customer)s - %(delivery)s' % {'customer':self.customer, 'delivery':self.delivery}
+    def get_oi(self):
+        self.optimize_items()
+        return self.get_oi_no_optim()
+    def get_oi_no_optim(self):
+        return OrderItem.objects.filter(order = self, is_actual = True)
+    def optimize_items(self):
+        ois = self.get_oi_no_optim()
+        for ois_item_v in ois.values('item').distinct():
+            ois_item = ois.get(item__id = ois_item_v['item'])
+            for ois_duplicate in ois.filter(~Q(id=ois_item.id), item = ois_item.item):
+                ois_item.quantity += ois_duplicate.quantity
+                ois_duplicate.delete()
+            ois_item.save()
+    def get_order_by_person(person):
+        order, order_created = Order.objects.get_or_create(customer = person, is_actual = True)
+        if (order.payment is not None and order.payment.is_actual):
+            payment = order.payment
+        else:
+            payment = Payment.objects.create()
+            order.payment = payment
+            order.save()
+        payment.recalculate()
+        return order, order_created, payment
     class Meta:
         verbose_name = _("Order")
         verbose_name_plural = _("Orders")
@@ -178,12 +210,33 @@ class Order(DescriptionModel):
 
 class OrderItem(DescriptionModel):
     item = models.ForeignKey('Item', verbose_name=_("Item"), help_text=_("Related order item."))
-    quantity = models.IntegerField(verbose_name=_("Quantity"), help_text=_("Quantity of items in the basket."))
+    quantity = models.IntegerField(default=1, verbose_name=_("Quantity"), help_text=_("Quantity of items in the basket."))
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price"), help_text=_("Price for each item."))
     order = models.ForeignKey('Order', verbose_name=_("Order"), help_text=_("Linked order."))
     def __str__(self):
         return _("%(order)s - %(item)s (%(quantity)s for %(price)s)") % {
             'order':self.order, 'item':self.item, 'price':self.price, 'quantity':self.quantity}
+    def new_order_item(item, order, quantity):
+        ois = order.get_oi().filter(item = item)
+        if ois.count() > 0:
+            oi = ois.first()
+            oi.quantity += quantity
+            oi.save()
+            created = False
+        else:
+            oi = OrderItem.objects.create(item = item, price = item.price, order = order, quantity = quantity)
+            created = True
+        return oi, created
+    def remove_order_item(item, order, quantity):
+        ois = order.get_oi().get(item = item)
+        ois_str = ois.__str__()
+        if (ois.quantity > quantity):
+            ois.quantity -= quantity
+            removed = False
+        else:
+            ois.delete()
+            removed = True
+        return ois_str, removed
     class Meta:
         verbose_name = _("Order Item")
         verbose_name_plural = _("Order Items")
@@ -209,10 +262,14 @@ class DeliveryDetails(DescriptionModel):
         verbose_name_plural = _("Delivery Details")
 
 class Payment(DescriptionModel):
-    type = models.ForeignKey('PaymentType', verbose_name=_("Payment Type"), help_text=_("Type of payment."))
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Amount"), help_text=_("Price to pay fo the order."))
+    type = models.ForeignKey('PaymentType', default=1, verbose_name=_("Payment Type"), help_text=_("Type of payment."))
+    amount = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_("Amount"), help_text=_("Price to pay fo the order."))
     def __str__(self):
         return _("%(type)s for %(amount)s") % {'type':self.type, 'amount':self.amount}
+    def recalculate(self):
+        order = Order.objects.get(payment = self, is_actual = True)
+        self.amount = sum(oi.price*oi.quantity for oi in order.get_oi())
+        self.save()
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
@@ -221,6 +278,8 @@ class Payment(DescriptionModel):
 class PaymentType(DescriptionModel):
     name = models.CharField(max_length=300, verbose_name=_("Payment Type"),
                                     help_text=_("Type of payment."))
+    def __str__(self):
+        return self.name
     class Meta:
         verbose_name = _("Payment Type")
         verbose_name_plural = _("Payment Types")
@@ -234,3 +293,37 @@ class Directory(DescriptionModel):
         verbose_name = _("Directory")
         verbose_name_plural = _("Directory")
         ordering = ('key', 'updated_when', )
+
+LOGGING_CHOICES = (
+    (u'Success', _(u'Success')),
+    (u'Info', _(u'Info')),
+    (u'Warning', _(u'Warning')),
+    (u'Danger', _(u'Danger')),
+)
+
+class Logging(DescriptionModel):
+    level = models.CharField(max_length=30, default='Info', choices = LOGGING_CHOICES)
+    message = models.CharField(max_length=500, verbose_name=_("Logging message"),
+                                    help_text=_("Message to be outputted by logging engine."))
+    user = models.ForeignKey(User, verbose_name=_("User"), help_text = _('Related user.'))
+    times = models.IntegerField(default=1, verbose_name=_("Output times"), help_text = _('Amount of times to show message to user.'))
+    till = models.DateTimeField(null=True, blank=True, verbose_name=_("Output till"), help_text = _('Show message till date and time.'))
+    def add_entry(user, message, level='Warning', times=1, till=None):
+        log = Logging.objects.create(user = user, level = level, message = message, times = times)
+        if till is not None:
+            log.till = till
+        log.save()
+        return log
+    def get_entries(user):
+        return Logging.objects.filter(user = user, is_actual = True)
+    def output(self):
+        if not self.is_actual():
+            return
+        if (self.times > 0):
+            self.times -= 1
+            return {'level':self.level, 'message':self.message}
+    def is_actual(self):
+        return self.times > 0 or (self.till is not None and self.till - datetime.now() > 0)
+    class Meta:
+        verbose_name = _("Logging entry")
+        verbose_name_plural = _("Logging entries")

@@ -2,9 +2,23 @@
 {% load i18n %}
 {% block title %}{% trans 'Goods' %}{% endblock %}
 {% block branding %}{% trans 'Goods' %}{% endblock %}
-{% block breadcrumbs %}{{ block.super }} &rsaquo; <a href='/'>{% trans 'Goods' %}</a>{% endblock %}
-{% block content %}Товари:<br/>
-	{% for item in goods %}
-		<a href='{% url 'market:goods_one' item.pk %}'>{{ item.name }} - {{ item.price }}</a><br/>
+{% block breadcrumbs %}{{ block.super }}<li><a href='{% url 'market:goods' %}'>{% trans 'Goods' %}</a></li>{% endblock %}
+{% block content %}
+    {% for item in goods %}
+        <div class="row">
+          <div class="col-sm-4 col-md-2" style="text-align: center">
+            <div class="thumbnail">
+              <a href="{% url 'market:good' item.pk %}"><img src="/{% firstof item.photo 'static/custom/pics/no_photo.jpg' %}" alt="{% trans 'Photo of ' %}{{ item.type }}"></a>
+              <div class="caption">
+                <h3><a href="{% url 'market:good' item.pk %}">{{ item.type }}</a></h3>
+                <p>{{ item.price }} грн.</p>
+                <p>
+                    <a href="{% url 'market:compare_add' item.pk %}" class="btn btn-default" role="button"><img src="/static/custom/pics/compare.jpg">{% trans 'Compare' %}</a>
+                    <a href="{% url 'market:basket_add' item.pk %}" class="btn btn-primary" role="button"><img src="/static/custom/pics/buy.jpg">{% trans 'Buy' %}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 	{% endfor %}
 {% endblock %}

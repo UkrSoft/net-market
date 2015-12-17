@@ -1,0 +1,26 @@
+{% extends "market/base_template.html" %}
+{% load i18n %}
+{% block title %}{% trans 'Basket' %}{% endblock %}
+{% block branding %}{% trans 'Basket' %}{% endblock %}
+{% block breadcrumbs %}{{ block.super }}<li><a href='{% url 'market:basket' %}'>{% trans 'Basket' %}</a></li>{% endblock %}
+{% block content %}
+    <table class="table">
+        <tr>
+            <td>{% trans 'ID' %}</td>
+            <td>{% trans 'Name' %}</td>
+            <td>{% trans 'Price' %}</td>
+            <td>{% trans 'Amount' %}</td>
+        </tr>
+        {% for item in order.get_oi %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{% url 'market:good' item.item.pk %}">{{ item.item.type }}</a></td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+        </tr>
+        {% endfor %}
+    <tr/>
+    <tr><td colspan='4'>{% trans 'Total price:' %} {{ payment.amount }} грн.</td></tr>
+    </table>
+    NEXT={{ next }}
+{% endblock %}

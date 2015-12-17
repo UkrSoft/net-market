@@ -86,6 +86,7 @@ class CustomIndexDashboard(Dashboard):
                 title = _('Payment Details'),
                 models = (
                     'BestOperator.models.Payment',
+                    'BestOperator.models.PaymentType',
                     'BestOperator.models.PaymentDetails',
                 ),
             )

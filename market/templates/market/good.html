@@ -2,6 +2,6 @@
 {% load i18n %}
 {% block title %}{{ good.name }}{% endblock %}
 {% block branding %}{{ good.name }}{% endblock %}
-{% block breadcrumbs %}{{ block.super }} &rsaquo; <a href='{% url 'market:goods_one' good.id %}'>{{ good.name }}</a>{% endblock %}
+{% block breadcrumbs %}{{ block.super }}<li><a href='{% url 'market:good' good.id %}'>{{ good.name }}</a></li>{% endblock %}
 {% block content %}Інформація про товари: {{ good.id }} - {{ good.name }}
 {% endblock %}
